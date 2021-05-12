@@ -136,6 +136,8 @@ dat_2p98p <- dat_long
 dat_2p98p$StandardErrorCorrected <- winsorizor(dat_long$StandardErrorCorrected, c(0.02), na.rm=TRUE)
 dat_2p98p$CorrelationCoefficientCorrected <- winsorizor(dat_long$CorrelationCoefficientCorrected, c(0.02), na.rm=TRUE)
 dat_2p98p$InstrumentSE <- winsorizor(dat_long$InstrumentSE, c(0.02), na.rm=TRUE)
+dat_2p98p$InstrumentVariance <- dat_2p98p$InstrumentSE^2
+dat_2p98p$PrecInstrumentVariance <- 1 / dat_2p98p$InstrumentVariance
 
 #calculate standard errors corrected after precision was winsorised
 dat_2p98p$InverseSECorrected <- 1 / dat_2p98p$StandardErrorCorrected
@@ -149,7 +151,7 @@ dat_2p98p$PrecVarianceSECorrected <- 1 / dat_2p98p$VarianceSECorrected
 plot_funnel_CorrelationCoefficientCorrected_2p98p <- ggplot(data=dat_2p98p,
                                                       aes(x=CorrelationCoefficientCorrected, y=InverseSECorrected)) +
   geom_point(size=1.5, color="blue") +
-  xlab("Standardised correlation coefficient") +
+  xlab("Standardised coefficient") +
   ylab("Inverse of standard error (precision)") +
   ggtitle("")+
   theme(title=element_text(size=10, face='bold'))+
@@ -226,7 +228,10 @@ coef_test(pubbias_1_CorrelationCoefficientCorrected_median, vcov = "CR0",
 
 #column (4)
 #IV
-pubbias_1_CorrelationCoefficientCorrected_IV <- lm(CorrelationCoefficientCorrected ~ InstrumentSE, weights=1/InstrumentSE, data=dat_2p98p)
+library(AER)
+
+#with ivreg package
+pubbias_1_CorrelationCoefficientCorrected_IV <- AER::ivreg(CorrelationCoefficientCorrected ~ StandardErrorCorrected | InstrumentSE, weights=1/DegreesofFreedom, data=dat_2p98p)
 summary(pubbias_1_CorrelationCoefficientCorrected_IV)
 
 coef_test(pubbias_1_CorrelationCoefficientCorrected_IV, vcov = "CR0", 
@@ -387,11 +392,11 @@ coef_test(MRA_1_CorrelationCoefficientCorrected_studyFE, vcov = "CR0",
           cluster = dat_2p98p$paperid, test = "naive-t")
 
 #column (4)
-#IV
-MRA_1_CorrelationCoefficientCorrected_IV <- lm(CorrelationCoefficientCorrected ~ InstrumentSE + EATR + EMTR + ATR + CorpTaxStructure + DataNonOECDcountries + DataMixofCountries + LongRunExplicit + ShortRunExplicit + TotalTaxRevenues + GovernmentSpending, weights=1/InstrumentSE, data=dat_2p98p)
-summary(MRA_1_CorrelationCoefficientCorrected_IV)
+#Random Effects
+MRA_1_CorrelationCoefficientCorrected_Random <- plm(CorrelationCoefficientCorrected ~ StandardErrorCorrected + EATR + EMTR + ATR + CorpTaxStructure + DataNonOECDcountries + DataMixofCountries + LongRunExplicit + ShortRunExplicit + TotalTaxRevenues + GovernmentSpending, index = c("paperid","pobsid"), model="random", data=dat_2p98p)
+summary(MRA_1_CorrelationCoefficientCorrected_Random)
 
-coef_test(MRA_1_CorrelationCoefficientCorrected_IV, vcov = "CR0", 
+coef_test(MRA_1_CorrelationCoefficientCorrected_Random, vcov = "CR0", 
           cluster = dat_2p98p$paperid, test = "naive-t")
 
 #column (5)
@@ -443,12 +448,12 @@ tvals_MRA_1_CorrelationCoefficientCorrected_OLS <- list(coef_test(MRA_1_Correlat
 pvals_MRA_1_CorrelationCoefficientCorrected_OLS <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_OLS, vcov = "CR0", 
                                                                       cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-ses_MRA_1_CorrelationCoefficientCorrected_IV <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_IV, vcov = "CR0", 
+ses_MRA_1_CorrelationCoefficientCorrected_Random <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_Random, vcov = "CR0", 
                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
-tvals_MRA_1_CorrelationCoefficientCorrected_IV <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_IV, vcov = "CR0", 
+tvals_MRA_1_CorrelationCoefficientCorrected_Random <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_Random, vcov = "CR0", 
                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-pvals_MRA_1_CorrelationCoefficientCorrected_IV <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_IV, vcov = "CR0", 
+pvals_MRA_1_CorrelationCoefficientCorrected_Random <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_Random, vcov = "CR0", 
                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 ses_MRA_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(MRA_1_partialcorr, vcov = "CR0", 
@@ -542,4 +547,4 @@ stargazer(MRA_1_CorrelationCoefficientCorrected_2p98p, MRA_1_CorrelationCoeffici
 stargazer(MRA_1_CorrelationCoefficientCorrected_2p98p, MRA_1_CorrelationCoefficientCorrected_now, MRA_1_CorrelationCoefficientCorrected_5p95p, MRA_1_CorrelationCoefficientCorrected_dummyPreferred, MRA_1_CorrelationCoefficientCorrected_onlypreferred, MRA_1_CorrelationCoefficientCorrected_noInferior, t=list(unlist(tvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_now), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_5p95p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_dummyPreferred), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_onlypreferred), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_noInferior)), se=list(unlist(ses_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_now), unlist(ses_MRA_1_CorrelationCoefficientCorrected_5p95p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_dummyPreferred), unlist(ses_MRA_1_CorrelationCoefficientCorrected_onlypreferred), unlist(ses_MRA_1_CorrelationCoefficientCorrected_noInferior)), p=list(unlist(pvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_now), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_5p95p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_dummyPreferred), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_onlypreferred), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_noInferior)))
 
 #Table D2 (see appendix)
-stargazer(MRA_1_CorrelationCoefficientCorrected_2p98p, MRA_1_CorrelationCoefficientCorrected_excludeTaxRev, MRA_1_CorrelationCoefficientCorrected_studyFE, MRA_1_CorrelationCoefficientCorrected_IV, MRA_1_CorrelationCoefficientCorrected_OLS, t=list(unlist(tvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_IV), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_OLS)), se=list(unlist(ses_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(ses_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(ses_MRA_1_CorrelationCoefficientCorrected_IV), unlist(ses_MRA_1_CorrelationCoefficientCorrected_OLS)), p=list(unlist(pvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_IV), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_OLS)))
+stargazer(MRA_1_CorrelationCoefficientCorrected_2p98p, MRA_1_CorrelationCoefficientCorrected_excludeTaxRev, MRA_1_CorrelationCoefficientCorrected_studyFE, MRA_1_CorrelationCoefficientCorrected_Random, MRA_1_CorrelationCoefficientCorrected_OLS, t=list(unlist(tvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_Random), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_OLS)), se=list(unlist(ses_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(ses_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(ses_MRA_1_CorrelationCoefficientCorrected_Random), unlist(ses_MRA_1_CorrelationCoefficientCorrected_OLS)), p=list(unlist(pvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_Random), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_OLS)))
