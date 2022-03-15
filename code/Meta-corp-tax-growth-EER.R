@@ -57,7 +57,7 @@ library(data.table)
 library(pscore)
 
 #Load data
-dat <- fread(here("data/Coding-taxes-and-growth-EER-RR.csv"))
+dat <- fread(here("data/Data-EER-RR2.csv"))
 
 #additional variables and data transformations
 #calculate the partial correlation coefficient
@@ -106,7 +106,7 @@ dat$weightDF <- 1/dat$DegreesofFreedom
 dat$alternativeweights <- 1/dat$NumberRegressions
 
 #transform data
-dat_long <- melt(dat, id=1:69)
+dat_long <- melt(dat, id=1:76)
 
 #sub-sets of the data
 #corrected coefficients
@@ -121,13 +121,6 @@ dat_long_without_inferior <- subset(dat_long_corrected, Preferred %in% c('1', '0
 
 #Descriptive statistics
 #all-set
-
-#minimum, maximum, standard deviation
-max(dat_long_corrected$CorrelationCoefficientCorrected)
-min(dat_long_corrected$CorrelationCoefficientCorrected)
-sd(dat_long_corrected$CorrelationCoefficientCorrected)
-mean(dat_long_corrected$CorrelationCoefficientCorrected)
-median(dat_long_corrected$CorrelationCoefficientCorrected)
 
 #winsorising at the 2nd and 98th percentiles
 dat_2p98p <- dat_long
@@ -199,6 +192,20 @@ dat_5p95p$CorrelationCoefficientCorrected <- ifelse(dat_5p95p$CorrelationCoeffic
 dat_5p95p$InstrumentSE <- ifelse(dat_5p95p$InstrumentSE>0.25000000, 0.25000000, dat_5p95p$InstrumentSE)
 dat_5p95p$InstrumentSE <- ifelse(dat_5p95p$InstrumentSE<0.02513388, 0.02513388, dat_5p95p$InstrumentSE)
 
+#minimum, maximum, standard deviation
+max(dat_2p98p$CorrelationCoefficientCorrected, na.rm=TRUE)
+min(dat_2p98p$CorrelationCoefficientCorrected, na.rm=TRUE)
+sd(dat_2p98p$CorrelationCoefficientCorrected, na.rm=TRUE)
+mean(dat_2p98p$CorrelationCoefficientCorrected, na.rm=TRUE)
+median(dat_2p98p$CorrelationCoefficientCorrected, na.rm=TRUE)
+
+mean(dat_2p98p$Level, na.rm=TRUE)
+sd(dat_2p98p$Level, na.rm=TRUE)
+
+mean(dat_2p98p$CapitalTax, na.rm=TRUE)
+sd(dat_2p98p$CapitalTax, na.rm=TRUE)
+
+
 #Funnel Asymmetry Precision Effect Tests
 #Table 1
 #column (1)
@@ -246,41 +253,41 @@ coef_test(pubbias_1_partialcorr, vcov = "CR0",
 
 #stargazer standard errors
 ses_pubbias_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
-                                                                       cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                       cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_pubbias_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
-                                                                         cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                         cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 pvals_pubbias_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
-                                                                         cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                         cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 
 ses_pubbias_1_CorrelationCoefficientCorrected_median <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_median, vcov = "CR0", 
-                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_pubbias_1_CorrelationCoefficientCorrected_median <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_median, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 pvals_pubbias_1_CorrelationCoefficientCorrected_median <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_median, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 
 ses_pubbias_1_CorrelationCoefficientCorrected_IV <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_IV, vcov = "CR0", 
-                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_pubbias_1_CorrelationCoefficientCorrected_IV <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_IV, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
-
-pvals_pubbias_1_CorrelationCoefficientCorrected_IV <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_IV, vcov = "CR0", 
                                                                       cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-ses_pubbias_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(pubbias_1_partialcorr, vcov = "CR0", 
-                                                                   cluster = dat$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
-tvals_pubbias_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(pubbias_1_partialcorr, vcov = "CR0", 
-                                                                     cluster = dat$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+pvals_pubbias_1_CorrelationCoefficientCorrected_IV <- list(coef_test(pubbias_1_CorrelationCoefficientCorrected_IV, vcov = "CR0", 
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-pvals_pubbias_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(pubbias_1_partialcorr, vcov = "CR0", 
+ses_pubbias_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(pubbias_1_partialcorr, vcov = "CR0", 
+                                                                   cluster = dat$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
+tvals_pubbias_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(pubbias_1_partialcorr, vcov = "CR0", 
                                                                      cluster = dat$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
+pvals_pubbias_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(pubbias_1_partialcorr, vcov = "CR0", 
+                                                                     cluster = dat$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+
 #stargazer table funnel asymmetry tests (table 1; column (6) regarding the non-parametric test based on Andrews and Kasy (2019 is missing here))
-stargazer(pubbias_1_CorrelationCoefficientCorrected_2p98p, pubbias_1_CorrelationCoefficientCorrected_median, pubbias_1_CorrelationCoefficientCorrected_IV, pubbias_1_partialcorr, t=list(unlist(tvals_pubbias_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_pubbias_1_CorrelationCoefficientCorrected_median), unlist(tvals_pubbias_1_CorrelationCoefficientCorrected_IV), unlist(tvals_pubbias_1_CorrelationCoefficientCorrected_partialcorr)), se=list(unlist(ses_pubbias_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_pubbias_1_CorrelationCoefficientCorrected_median), unlist(ses_pubbias_1_CorrelationCoefficientCorrected_IV), unlist(ses_pubbias_1_CorrelationCoefficientCorrected_partialcorr)), p=list(unlist(pvals_pubbias_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_pubbias_1_CorrelationCoefficientCorrected_median), unlist(pvals_pubbias_1_CorrelationCoefficientCorrected_IV), unlist(pvals_pubbias_1_CorrelationCoefficientCorrected_partialcorr)))
+stargazer(pubbias_1_CorrelationCoefficientCorrected_2p98p, pubbias_1_CorrelationCoefficientCorrected_median, pubbias_1_partialcorr, t=list(unlist(tvals_pubbias_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_pubbias_1_CorrelationCoefficientCorrected_median), unlist(tvals_pubbias_1_CorrelationCoefficientCorrected_partialcorr)), se=list(unlist(ses_pubbias_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_pubbias_1_CorrelationCoefficientCorrected_median), unlist(ses_pubbias_1_CorrelationCoefficientCorrected_partialcorr)), p=list(unlist(pvals_pubbias_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_pubbias_1_CorrelationCoefficientCorrected_median), unlist(pvals_pubbias_1_CorrelationCoefficientCorrected_partialcorr)))
 
 #Table 3
 #column (1)
@@ -299,6 +306,15 @@ coef_test(MRA_1_CorrelationCoefficientCorrected_est_data, vcov = "CR0",
           cluster = dat_2p98p$paperid, test = "naive-t")
 
 #column (3)
+#controlling for other tax measures
+#+estimation details + data characteristics
+MRA_1_CorrelationCoefficientCorrected_est_tax <- lm(CorrelationCoefficientCorrected ~ StandardErrorCorrected + EATR + EMTR + ATR + CorpTaxStructure + DataNonOECDcountries + DataMixofCountries + LongRunExplicit + ShortRunExplicit + TotalTaxRevenues + GovernmentSpending + TopMarginalPersonalIncomeTax + PersonalIncomeTax + SalesTax + PropertyTax + CapitalTax, weights=PrecVarianceSECorrected, data=dat_2p98p)
+summary(MRA_1_CorrelationCoefficientCorrected_est_tax)
+
+coef_test(MRA_1_CorrelationCoefficientCorrected_est_tax, vcov = "CR0", 
+          cluster = dat_2p98p$paperid, test = "naive-t")
+
+#column (4)
 #+publication characteristics
 dat_2p98p$YearofPublicationCorr <- dat_2p98p$YearofPublication - mean(dat_2p98p$YearofPublication, na.rm=TRUE)
 
@@ -308,7 +324,8 @@ summary(MRA_1_CorrelationCoefficientCorrected_pubchar)
 coef_test(MRA_1_CorrelationCoefficientCorrected_pubchar, vcov = "CR0", 
           cluster = dat_2p98p$paperid, test = "naive-t")
 sd(dat_2p98p$IntraNational)
-#column (4)
+
+#column (5)
 #median
 MRA_1_CorrelationCoefficientCorrected_median<- lm(coeffmed ~ StandardErrorCorrected + EATR + EMTR + ATR + CorpTaxStructure + DataNonOECDcountries + DataMixofCountries + LongRunExplicit + ShortRunExplicit + TotalTaxRevenues + GovernmentSpending, weights=PrecVarianceSECorrected, data=dat_2p98p)
 summary(MRA_1_CorrelationCoefficientCorrected_median)
@@ -316,7 +333,7 @@ summary(MRA_1_CorrelationCoefficientCorrected_median)
 coef_test(MRA_1_CorrelationCoefficientCorrected_median, vcov = "CR0", 
           cluster = dat_2p98p$paperid, test = "naive-t")
 
-#column (5)
+#column (6)
 #partial correlation
 MRA_1_partialcorr <- lm(PartialCorrelationCoefficient ~ StandardErrorPartialCorrelation + EATR + EMTR + ATR + CorpTaxStructure + DataNonOECDcountries + DataMixofCountries + LongRunExplicit + ShortRunExplicit + TotalTaxRevenues + GovernmentSpending, weights=PrecVariance, data=dat)
 summary(MRA_1_partialcorr)
@@ -383,6 +400,14 @@ coef_test(MRA_1_CorrelationCoefficientCorrected_excludeTaxRev, vcov = "CR0",
           cluster = dat_2p98p$paperid, test = "naive-t")
 
 #column (3)
+#controlling for level estimats (i.e. dependent variable in (log) levels)
+MRA_1_CorrelationCoefficientCorrected_levels <- lm(CorrelationCoefficientCorrected ~ StandardErrorCorrected + EATR + EMTR + ATR + CorpTaxStructure + DataNonOECDcountries + DataMixofCountries + LongRunExplicit + ShortRunExplicit + TotalTaxRevenues + GovernmentSpending + Level, weights=PrecVarianceSECorrected, data=dat_2p98p)
+summary(MRA_1_CorrelationCoefficientCorrected_levels)
+
+coef_test(MRA_1_CorrelationCoefficientCorrected_levels, vcov = "CR0", 
+          cluster = dat_2p98p$paperid, test = "naive-t")
+
+#column (4)
 #with study-fixed effects
 MRA_1_CorrelationCoefficientCorrected_studyFE <- lm(CorrelationCoefficientCorrected ~ StandardErrorCorrected + EATR + EMTR + ATR + CorpTaxStructure + DataNonOECDcountries + DataMixofCountries + LongRunExplicit + ShortRunExplicit + TotalTaxRevenues + GovernmentSpending + as.factor(paperid) - 1, weights=PrecVarianceSECorrected, data=dat_2p98p)
 summary(MRA_1_CorrelationCoefficientCorrected_studyFE)
@@ -390,7 +415,7 @@ summary(MRA_1_CorrelationCoefficientCorrected_studyFE)
 coef_test(MRA_1_CorrelationCoefficientCorrected_studyFE, vcov = "CR0", 
           cluster = dat_2p98p$paperid, test = "naive-t")
 
-#column (4)
+#column (5)
 #Random Effects
 MRA_1_CorrelationCoefficientCorrected_Random <- plm(CorrelationCoefficientCorrected ~ StandardErrorCorrected + EATR + EMTR + ATR + CorpTaxStructure + DataNonOECDcountries + DataMixofCountries + LongRunExplicit + ShortRunExplicit + TotalTaxRevenues + GovernmentSpending, index = c("paperid","pobsid"), model="random", data=dat_2p98p)
 summary(MRA_1_CorrelationCoefficientCorrected_Random)
@@ -398,7 +423,7 @@ summary(MRA_1_CorrelationCoefficientCorrected_Random)
 coef_test(MRA_1_CorrelationCoefficientCorrected_Random, vcov = "CR0", 
           cluster = dat_2p98p$paperid, test = "naive-t")
 
-#column (5)
+#column (6)
 #OLS
 MRA_1_CorrelationCoefficientCorrected_OLS <- lm(CorrelationCoefficientCorrected ~ StandardErrorCorrected + EATR + EMTR + ATR + CorpTaxStructure + DataNonOECDcountries + DataMixofCountries + LongRunExplicit + ShortRunExplicit + TotalTaxRevenues + GovernmentSpending, data=dat_2p98p)
 summary(MRA_1_CorrelationCoefficientCorrected_OLS)
@@ -408,145 +433,161 @@ coef_test(MRA_1_CorrelationCoefficientCorrected_OLS, vcov = "CR0",
 
 #robust standard errors and t-values
 ses_MRA_1_CorrelationCoefficientCorrected_now <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_now, vcov = "CR0", 
-                                                                cluster = dat_long$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                cluster = dat_long$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_now <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_now, vcov = "CR0", 
-                                                                  cluster = dat_long$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
-
-pvals_MRA_1_CorrelationCoefficientCorrected_now <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_now, vcov = "CR0", 
                                                                   cluster = dat_long$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-ses_MRA_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
-tvals_MRA_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
-                                                                        cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+pvals_MRA_1_CorrelationCoefficientCorrected_now <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_now, vcov = "CR0", 
+                                                                  cluster = dat_long$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-pvals_MRA_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
+ses_MRA_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
+tvals_MRA_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
                                                                         cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
+pvals_MRA_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
+                                                                        cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+
+ses_MRA_1_CorrelationCoefficientCorrected_levels <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_levels, vcov = "CR0", 
+                                                                  cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
+tvals_MRA_1_CorrelationCoefficientCorrected_levels <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_levels, vcov = "CR0", 
+                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+
+pvals_MRA_1_CorrelationCoefficientCorrected_levels <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_levels, vcov = "CR0", 
+                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+
+
 ses_MRA_pubbias_1_CorrelationCoefficientCorrected_now <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_now, vcov = "CR0", 
-                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_pubbias_1_CorrelationCoefficientCorrected_now <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_now, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 pvals_MRA_pubbias_1_CorrelationCoefficientCorrected_now <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_now, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 ses_MRA_1_CorrelationCoefficientCorrected_median <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_median, vcov = "CR0", 
-                                                                       cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                       cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_median <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_median, vcov = "CR0", 
-                                                                         cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
-
-pvals_MRA_1_CorrelationCoefficientCorrected_median <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_median, vcov = "CR0", 
                                                                          cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
+pvals_MRA_1_CorrelationCoefficientCorrected_median <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_median, vcov = "CR0", 
+                                                                         cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+
 ses_MRA_1_CorrelationCoefficientCorrected_OLS <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_OLS, vcov = "CR0", 
-                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_OLS <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_OLS, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 pvals_MRA_1_CorrelationCoefficientCorrected_OLS <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_OLS, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 ses_MRA_1_CorrelationCoefficientCorrected_Random <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_Random, vcov = "CR0", 
-                                                                   cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                   cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_Random <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_Random, vcov = "CR0", 
-                                                                     cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                     cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 pvals_MRA_1_CorrelationCoefficientCorrected_Random <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_Random, vcov = "CR0", 
-                                                                     cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                     cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 ses_MRA_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(MRA_1_partialcorr, vcov = "CR0", 
-                                                                            cluster = dat$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                            cluster = dat$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(MRA_1_partialcorr, vcov = "CR0", 
-                                                                              cluster = dat$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
-
-pvals_MRA_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(MRA_1_partialcorr, vcov = "CR0", 
                                                                               cluster = dat$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-ses_MRA_1_CorrelationCoefficientCorrected_est_data <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_est_data, vcov = "CR0", 
-                                                                   cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
-tvals_MRA_1_CorrelationCoefficientCorrected_est_data <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_est_data, vcov = "CR0", 
-                                                                     cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+pvals_MRA_1_CorrelationCoefficientCorrected_partialcorr <- list(coef_test(MRA_1_partialcorr, vcov = "CR0", 
+                                                                              cluster = dat$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-pvals_MRA_1_CorrelationCoefficientCorrected_est_data <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_est_data, vcov = "CR0", 
+ses_MRA_1_CorrelationCoefficientCorrected_est_data <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_est_data, vcov = "CR0", 
+                                                                   cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
+tvals_MRA_1_CorrelationCoefficientCorrected_est_data <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_est_data, vcov = "CR0", 
                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
+pvals_MRA_1_CorrelationCoefficientCorrected_est_data <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_est_data, vcov = "CR0", 
+                                                                     cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+
+ses_MRA_1_CorrelationCoefficientCorrected_est_tax <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_est_tax, vcov = "CR0", 
+                                                                     cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
+tvals_MRA_1_CorrelationCoefficientCorrected_est_tax <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_est_tax, vcov = "CR0", 
+                                                                       cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+
+pvals_MRA_1_CorrelationCoefficientCorrected_est_tax <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_est_tax, vcov = "CR0", 
+                                                                       cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 ses_MRA_1_CorrelationCoefficientCorrected_pubchar <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_pubchar, vcov = "CR0", 
-                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                    cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_pubchar <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_pubchar, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 pvals_MRA_1_CorrelationCoefficientCorrected_pubchar <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_pubchar, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 
 ses_MRA_1_CorrelationCoefficientCorrected_noInferior <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_noInferior, vcov = "CR0", 
-                                                                            cluster = dat_long_without_inferior$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                            cluster = dat_long_without_inferior$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_noInferior  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_noInferior, vcov = "CR0", 
-                                                                               cluster = dat_long_without_inferior$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
-
-pvals_MRA_1_CorrelationCoefficientCorrected_noInferior  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_noInferior, vcov = "CR0", 
                                                                                cluster = dat_long_without_inferior$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
+pvals_MRA_1_CorrelationCoefficientCorrected_noInferior  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_noInferior, vcov = "CR0", 
+                                                                               cluster = dat_long_without_inferior$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+
 ses_MRA_1_CorrelationCoefficientCorrected_onlypreferred <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_onlypreferred, vcov = "CR0", 
-                                                                       cluster = dat_long_preferred$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                       cluster = dat_long_preferred$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_onlypreferred  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_onlypreferred, vcov = "CR0", 
-                                                                          cluster = dat_long_preferred$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                          cluster = dat_long_preferred$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 pvals_MRA_1_CorrelationCoefficientCorrected_onlypreferred  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_onlypreferred, vcov = "CR0", 
-                                                                          cluster = dat_long_preferred$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                          cluster = dat_long_preferred$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 
 ses_MRA_1_CorrelationCoefficientCorrected_studyFE <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_studyFE, vcov = "CR0", 
-                                                                          cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                          cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_studyFE  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_studyFE, vcov = "CR0", 
-                                                                             cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                             cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 pvals_MRA_1_CorrelationCoefficientCorrected_studyFE  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_studyFE, vcov = "CR0", 
-                                                                             cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                             cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 ses_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_excludeTaxRev, vcov = "CR0", 
-                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                      cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_excludeTaxRev, vcov = "CR0", 
-                                                                         cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
-
-pvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_excludeTaxRev, vcov = "CR0", 
                                                                          cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-ses_MRA_1_CorrelationCoefficientCorrected_dummyPreferred <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_dummyPreferred, vcov = "CR0", 
-                                                                          cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
-tvals_MRA_1_CorrelationCoefficientCorrected_dummyPreferred  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_dummyPreferred, vcov = "CR0", 
-                                                                             cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+pvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_excludeTaxRev, vcov = "CR0", 
+                                                                         cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-pvals_MRA_1_CorrelationCoefficientCorrected_dummyPreferred  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_dummyPreferred, vcov = "CR0", 
+ses_MRA_1_CorrelationCoefficientCorrected_dummyPreferred <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_dummyPreferred, vcov = "CR0", 
+                                                                          cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
+tvals_MRA_1_CorrelationCoefficientCorrected_dummyPreferred  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_dummyPreferred, vcov = "CR0", 
                                                                              cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-ses_MRA_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
-                                                                           cluster = dat_2p98p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
-tvals_MRA_1_CorrelationCoefficientCorrected_2p98p  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
-                                                                              cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+pvals_MRA_1_CorrelationCoefficientCorrected_dummyPreferred  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_dummyPreferred, vcov = "CR0", 
+                                                                             cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
-pvals_MRA_1_CorrelationCoefficientCorrected_2p98p  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
+ses_MRA_1_CorrelationCoefficientCorrected_2p98p <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
+                                                                           cluster = dat_2p98p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
+tvals_MRA_1_CorrelationCoefficientCorrected_2p98p  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
                                                                               cluster = dat_2p98p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
+pvals_MRA_1_CorrelationCoefficientCorrected_2p98p  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_2p98p, vcov = "CR0", 
+                                                                              cluster = dat_2p98p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+
 ses_MRA_1_CorrelationCoefficientCorrected_5p95p <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_5p95p, vcov = "CR0", 
-                                                                  cluster = dat_5p95p$paperid, test = "naive-t")[,2]) #heteroskedasticity-robust standard errors
+                                                                  cluster = dat_5p95p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust standard errors
 tvals_MRA_1_CorrelationCoefficientCorrected_5p95p  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_5p95p, vcov = "CR0", 
-                                                                     cluster = dat_5p95p$paperid, test = "naive-t")[,3]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                     cluster = dat_5p95p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 pvals_MRA_1_CorrelationCoefficientCorrected_5p95p  <- list(coef_test(MRA_1_CorrelationCoefficientCorrected_5p95p, vcov = "CR0", 
-                                                                     cluster = dat_5p95p$paperid, test = "naive-t")[,4]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
+                                                                     cluster = dat_5p95p$paperid, test = "naive-t")[,6]) #heteroskedasticity-robust t-values "group" ("time") accounts for serial (cross-sectional) correlation.
 
 
 #Table 3 (main meta-regression table)
-stargazer(MRA_1_CorrelationCoefficientCorrected_2p98p, MRA_1_CorrelationCoefficientCorrected_est_data, MRA_1_CorrelationCoefficientCorrected_pubchar, MRA_1_CorrelationCoefficientCorrected_median, MRA_1_partialcorr, t=list(unlist(tvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_est_data), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_pubchar), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_median), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_partialcorr)), se=list(unlist(ses_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_est_data), unlist(ses_MRA_1_CorrelationCoefficientCorrected_pubchar), unlist(ses_MRA_1_CorrelationCoefficientCorrected_median), unlist(ses_MRA_1_CorrelationCoefficientCorrected_partialcorr)), p=list(unlist(pvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_est_data), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_pubchar), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_median), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_partialcorr)))
+stargazer(MRA_1_CorrelationCoefficientCorrected_2p98p, MRA_1_CorrelationCoefficientCorrected_est_data, MRA_1_CorrelationCoefficientCorrected_est_tax, MRA_1_CorrelationCoefficientCorrected_pubchar, MRA_1_CorrelationCoefficientCorrected_median, MRA_1_partialcorr, t=list(unlist(tvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_est_data), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_est_tax), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_pubchar), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_median), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_partialcorr)), se=list(unlist(ses_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_est_data), unlist(ses_MRA_1_CorrelationCoefficientCorrected_est_tax), unlist(ses_MRA_1_CorrelationCoefficientCorrected_pubchar), unlist(ses_MRA_1_CorrelationCoefficientCorrected_median), unlist(ses_MRA_1_CorrelationCoefficientCorrected_partialcorr)), p=list(unlist(pvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_est_data), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_est_tax), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_pubchar), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_median), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_partialcorr)))
 
 #Table D1 (see appendix)
 stargazer(MRA_1_CorrelationCoefficientCorrected_2p98p, MRA_1_CorrelationCoefficientCorrected_now, MRA_1_CorrelationCoefficientCorrected_5p95p, MRA_1_CorrelationCoefficientCorrected_dummyPreferred, MRA_1_CorrelationCoefficientCorrected_onlypreferred, MRA_1_CorrelationCoefficientCorrected_noInferior, t=list(unlist(tvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_now), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_5p95p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_dummyPreferred), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_onlypreferred), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_noInferior)), se=list(unlist(ses_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_now), unlist(ses_MRA_1_CorrelationCoefficientCorrected_5p95p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_dummyPreferred), unlist(ses_MRA_1_CorrelationCoefficientCorrected_onlypreferred), unlist(ses_MRA_1_CorrelationCoefficientCorrected_noInferior)), p=list(unlist(pvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_now), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_5p95p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_dummyPreferred), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_onlypreferred), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_noInferior)))
 
 #Table D2 (see appendix)
-stargazer(MRA_1_CorrelationCoefficientCorrected_2p98p, MRA_1_CorrelationCoefficientCorrected_excludeTaxRev, MRA_1_CorrelationCoefficientCorrected_studyFE, MRA_1_CorrelationCoefficientCorrected_Random, MRA_1_CorrelationCoefficientCorrected_OLS, t=list(unlist(tvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_Random), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_OLS)), se=list(unlist(ses_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(ses_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(ses_MRA_1_CorrelationCoefficientCorrected_Random), unlist(ses_MRA_1_CorrelationCoefficientCorrected_OLS)), p=list(unlist(pvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_Random), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_OLS)))
+stargazer(MRA_1_CorrelationCoefficientCorrected_2p98p, MRA_1_CorrelationCoefficientCorrected_excludeTaxRev, MRA_1_CorrelationCoefficientCorrected_levels, MRA_1_CorrelationCoefficientCorrected_studyFE, MRA_1_CorrelationCoefficientCorrected_OLS, t=list(unlist(tvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_levels), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(tvals_MRA_1_CorrelationCoefficientCorrected_OLS)), se=list(unlist(ses_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(ses_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(ses_MRA_1_CorrelationCoefficientCorrected_levels), unlist(ses_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(ses_MRA_1_CorrelationCoefficientCorrected_OLS)), p=list(unlist(pvals_MRA_1_CorrelationCoefficientCorrected_2p98p), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_excludeTaxRev), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_levels), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_studyFE), unlist(pvals_MRA_1_CorrelationCoefficientCorrected_OLS)))
 
 #mean of standardised coefficient
 
