@@ -4,7 +4,15 @@ rm(list = ls()) #clear list
 packages <- c("xlsx","calibrate","stargazer","sandwich","lmtest","getopt","CausalGAM","ggplot2","reshape2","xts",
               "lattice","gridExtra","gtable","plm","lfe","lmtest","car","tis","foreign","MASS","quantreg","ggrepel",
               "dplyr","stringr","datasets","rio","psych","systemfit","MatchIt","CRTgeeDR","eurostat","zoo","ggthemes",
-              "robumeta","metafor","dplyr","clubSandwich","Hmisc","metafor","pracma","pkgs","broom","sjPlot", "here", "data.table", "pscore")
+              "robumeta","metafor","dplyr","clubSandwich","Hmisc","metafor","pracma","pkgs","broom","sjPlot", "here", "data.table", "pscore", "AER")
+
+ipak <- function(pkg){
+  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+  if (length(new.pkg))
+    install.packages(new.pkg, dependencies = TRUE)
+  sapply(pkg, require, character.only = TRUE)
+}
+
 ipak(packages)
 
 #load packages
@@ -163,7 +171,7 @@ plot_funnel_CorrelationCoefficientCorrected_2p98p
 
 #save figure
 ggsave(plot = plot_funnel_CorrelationCoefficientCorrected_2p98p, 
-       filename = paste0(here("figures/funnel_w2_98"), 
+       filename = paste0(here("funnel_w2_98"), 
                          ".pdf"),
        width = 6.5, height = 4)
 
